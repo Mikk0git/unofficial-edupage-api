@@ -14,12 +14,8 @@ def get_substitutions(schoolName, date):
 
 
     finalJson = {
-        "absentTeachers":None,
-        "absentClasses":None,
-        "unavalibleClassRooms":None,
-        "substitutions":[],
+        "all_substitutions":[]
             }
-    
     
     classSubstitutions = soup.find_all("div", class_="print-nobreak")
 
@@ -44,8 +40,8 @@ def get_substitutions(schoolName, date):
            
 
         if className: 
-          finalJson["substitutions"].append({
-            "className": className,
+          finalJson["all_substitutions"].append({
+            "name": className,
             "substitutions":substitutionsArray
         })
 
@@ -53,4 +49,4 @@ def get_substitutions(schoolName, date):
     
     return finalJson
     
-print(get_substitutions("", "2024-03-15"))
+print(get_substitutions("zs2ostrzeszow", "2024-03-15"))
