@@ -14,28 +14,31 @@ def get_substitutions(schoolName, date):
     res = requests.post(url, json=body)
     if res.status_code != 200:
         return {"error": "Error retrieving substitutions."}, 500
-
     data = json.loads(res.text)
     soup = BeautifulSoup(data["r"], "html.parser")
 
-    finalJson = {"all_substitutions": []}
+    try:
+        nosubst = soup.find("div", class_="nosubst").find(
+            "div", class_="info").string
+        return {"error": nosubst}, 404
+    except:
+        classSubstitutions = soup.find_all("div", class_="print-nobreak")
 
-    classSubstitutions = soup.find_all("div", class_="print-nobreak")
+        finalJson = {"all_substitutions": []}
+        for classData in classSubstitutions:
+            className = classData.find("div", class_="header").string
+            substitutions = classData.find_all("div", class_="row")
+            substitutionsArray = []
+            for substitution in substitutions:
+                hour = substitution.find("div", class_="period").string
+                info = substitution.find("div", class_="info").string
+                substitutionsArray.append({"hour": hour, "info": info})
 
-    for classData in classSubstitutions:
-        className = classData.find("div", class_="header").string
-        substitutions = classData.find_all("div", class_="row")
-        substitutionsArray = []
-        for substitution in substitutions:
-            hour = substitution.find("div", class_="period").string
-            info = substitution.find("div", class_="info").string
-            substitutionsArray.append({"hour": hour, "info": info})
-
-        if className:
-            finalJson["all_substitutions"].append({
-                "name": className,
-                "substitutions": substitutionsArray
-            })
+            if className:
+                finalJson["all_substitutions"].append({
+                    "name": className,
+                    "substitutions": substitutionsArray
+                })
 
     return finalJson, 200
 
@@ -54,3 +57,5 @@ def substitutions_endpoint():
 
 if __name__ == '__main__':
     app.run(debug=True)  # You can set debug=False for production
+
+print(get_substitutions("zs2ostrzeszow", "2024-03-10"))
