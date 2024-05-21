@@ -56,6 +56,6 @@ def substitutions_endpoint():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)  # You can set debug=False for production
+    app.run(debug=False)  # You can set debug=False for production
 
 print(get_substitutions("zs2ostrzeszow", "2024-03-10"))
